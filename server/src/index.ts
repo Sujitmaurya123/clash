@@ -1,6 +1,7 @@
 import express ,{Application ,Request ,Response} from "express"
 import "dotenv/config"
 import ejs from "ejs";
+import { limiter } from "./config/rateLimit.js";
 const app:Application=express()
 const PORT= process.env.PORT||7000
 import { emailQueue, emailQueueName } from "./jobs/EmailJob.js";
@@ -12,6 +13,7 @@ const __dirname=path.dirname(fileURLToPath(import.meta.url))
 
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
+app.use(limiter);
 
 // * Set View engine
 app.set("view engine","ejs")
@@ -29,5 +31,6 @@ app.get("/",async(req:Request,res:Response)=>{
 
 // Queues
 import "./jobs/index.js";
+
 
 app.listen(PORT,()=>console.log(`Server is running on PORT ${PORT}`));
