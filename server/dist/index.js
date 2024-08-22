@@ -2,6 +2,8 @@ import express from "express";
 import "dotenv/config";
 import ejs from "ejs";
 import { limiter } from "./config/rateLimit.js";
+import fileUpload from "express-fileupload";
+import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 7000;
 import { emailQueue, emailQueueName } from "./jobs/EmailJob.js";
@@ -10,8 +12,14 @@ import { fileURLToPath } from "url";
 import Routes from "./routes/index.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(limiter);
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
+app.use(express.static("public"));
 // * Set View engine
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
