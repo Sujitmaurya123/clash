@@ -8,6 +8,8 @@ import { emailQueue, emailQueueName } from "../jobs/EmailJob.js";
 import jwt from "jsonwebtoken";
 import authMiddleware from "../middleware/AuthMiddleware.js";
 import { authLimiter } from "../config/rateLimit.js";
+import logger from "../config/logger.js";
+import { testQueue, testQueueName } from "../jobs/TestQueue.js";
 const router = Router();
 // * Login routes
 router.post("/login", authLimiter, async (req, res) => {
@@ -65,7 +67,7 @@ router.post("/login", authLimiter, async (req, res) => {
             res.status(422).json({ message: "Invalid data", errors });
         }
         else {
-            // logger.error({ type: "Auth Error", body: error });
+            logger.error({ type: "Auth Error", body: error });
             res
                 .status(500)
                 .json({ error: "Something went wrong.please try again!", data: error });
@@ -115,7 +117,7 @@ router.post("/check/login", authLimiter, async (req, res) => {
             res.status(422).json({ message: "Invalid login data", errors });
         }
         else {
-            // logger.error({ type: "Auth Error", body: error });
+            logger.error({ type: "Auth Error", body: error });
             res.status(500).json({
                 error: "Something went wrong.please try again!",
                 data: error,
@@ -221,7 +223,7 @@ router.post("/forget-password", authLimiter, async (req, res) => {
             return res.status(422).json({ message: "Invalid data", errors });
         }
         else {
-            // logger.error({ type: "Auth Error", body: error });
+            logger.error({ type: "Auth Error", body: error });
             return res.status(500).json({
                 error: "Something went wrong.please try again!",
                 data: error,
@@ -286,7 +288,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
             return res.status(422).json({ message: "Invalid data", errors });
         }
         else {
-            // logger.error({ type: "Auth Error", body: error });
+            logger.error({ type: "Auth Error", body: error });
             return res.status(500).json({
                 error: "Something went wrong.please try again!",
                 data: error,
@@ -297,7 +299,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
 // * Get User
 router.get("/user", authMiddleware, async (req, res) => {
     const user = req.user;
-    // await testQueue.add(testQueueName, user);
+    await testQueue.add(testQueueName, user);
     return res.json({ message: "Fetched", user });
 });
 export default router;

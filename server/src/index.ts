@@ -4,17 +4,33 @@ import ejs from "ejs";
 import { limiter } from "./config/rateLimit.js";
 import fileUpload from "express-fileupload"
 import cors from "cors"
-const app:Application=express()
+
+import { createServer, Server as HttpServer } from "http";
 const PORT= process.env.PORT||7000
 import { emailQueue, emailQueueName } from "./jobs/EmailJob.js";
 import path from 'path'
 import {fileURLToPath} from "url"
 import Routes from "./routes/index.js";
+import {Server} from "socket.io"
+import { setupSocket } from "./socket.js";
+import helmet from "helmet";
 const __dirname=path.dirname(fileURLToPath(import.meta.url))
 
+const app:Application=express()
+const server: HttpServer = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+  },
+});
 
-app.use(express.json())
+export { io };
+setupSocket(io);
+
+app.use(express.json());
 app.use(cors());
+app.use(helmet());
+
 app.use(express.urlencoded({extended:false}))
 app.use(limiter);
 app.use(fileUpload({
@@ -41,4 +57,5 @@ app.get("/",async(req:Request,res:Response)=>{
 import "./jobs/index.js";
 
 
-app.listen(PORT,()=>console.log(`Server is running on PORT ${PORT}`));
+
+server.listen(PORT,()=>console.log(`Server is running on PORT ${PORT}`));

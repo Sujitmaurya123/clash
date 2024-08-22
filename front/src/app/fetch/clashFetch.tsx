@@ -1,5 +1,6 @@
 import { CLASH_URL } from "@/lib/apiEndPoints";
 
+
 export async function fetchClashs(token: string) {
   const res = await fetch(CLASH_URL, {
     headers: {
@@ -10,6 +11,7 @@ export async function fetchClashs(token: string) {
       tags: ["dashboard"],
     },
   });
+  
 
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
@@ -23,10 +25,12 @@ export async function fetchClashs(token: string) {
 }
 
 export async function fetchClash(id: number) {
+
   const res = await fetch(`${CLASH_URL}/${id}`, {
     cache: "no-cache",
   });
-
+  
+  // console.log(res);
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
     throw new Error("Failed to fetch data");

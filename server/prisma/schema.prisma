@@ -24,7 +24,7 @@ model User {
   email_verify_token   String?
   created_at           DateTime  @default(now())
   Clash                Clash[]
-  
+   @@index([name])
 }
 
 
@@ -38,7 +38,25 @@ model Clash {
   created_at    DateTime        @default(now())
   expire_at     DateTime
   
- 
+  ClashItem     ClashItem[]
+  ClashComments ClashComments[]
+  @@index([expire_at, title])
 }
 
 
+model ClashItem {
+  id         Int      @id @default(autoincrement())
+  clash      Clash    @relation(fields: [clash_id], references: [id], onDelete: Cascade)
+  clash_id   Int
+  image      String
+  count      Int      @default(0)
+  created_at DateTime @default(now())
+}
+
+model ClashComments {
+  id         Int      @id @default(autoincrement())
+  clash      Clash    @relation(fields: [clash_id], references: [id], onDelete: Cascade)
+  clash_id   Int
+  comment    String
+  created_at DateTime @default(now())
+}
